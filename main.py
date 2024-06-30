@@ -8,12 +8,10 @@ print("zamn zawg")
 
 import tkinter as tk
 
-''' TKInter is a standard inferface and gui library that we will be using to create windows, buttons, dipsplay photos, and mostly anything to do
-    with human interaction with the code.'''
+''' TKInter is a standard inferface and gui library that we will be using to create windows, buttons, dipsplay photos, and mostly anything related
+    to human interaction with the code.'''
 
 import os
-from tkinter import Toplevel, Listbox, Scrollbar, Frame
-from tkinter import filedialog
 from screen_selector import make_selection # I don't know how much experience you have with linking code from file to file, but here we are just
                                            # taking the function from screen_selector.py and using it with the following environment below.
                                            # This was done for code organizational purposes.

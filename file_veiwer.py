@@ -1,8 +1,8 @@
 import tkinter as tk
 import os
-from tkinter import Toplevel, Listbox, Scrollbar, Frame
-from tkinter import filedialog
-from PIL import Image
+from tkinter import Toplevel, Listbox, Scrollbar, Frame, Canvas
+from tkinter import filedialog, ttk
+from PIL import Image, ImageTk
 
 # default_folder_path = os.path.expanduser("/screen_selections")
 open_windows = {}  # Dictionary to track open windows
@@ -26,11 +26,50 @@ def open_selections(root):
 
         img_window = Toplevel(root)
         img_window.title(file_path)
+
+        # Create a frame for the side menu
+        menu_frame = Frame(img_window, width=200, bg='lightgrey')
+        menu_frame.pack(side=tk.LEFT, fill=tk.Y)
+        menu_frame.pack_propagate(False)
+
+        # Create a nested frame for the button
+        button_frame = Frame(menu_frame, bg='lightgrey')
+        button_frame.pack(fill=tk.BOTH, expand=True)
+
+        # Load the eyedropper icon
+        eyedropper_icon_path = "ui_elements/eyedropper.png"  # Replace with the correct path to the eyedropper icon
+        eyedropper_icon = Image.open(eyedropper_icon_path)
+        eyedropper_icon = eyedropper_icon.resize((40, 40), Image.LANCZOS)
+        eyedropper_icon = ImageTk.PhotoImage(eyedropper_icon)
+
+        # Create the eyedropper button
+        toggle_var = tk.IntVar()
+        eyedropper_button = ttk.Checkbutton(button_frame, image=eyedropper_icon, variable=toggle_var, style="Toolbutton", command=lambda: print("zamn"))
+        eyedropper_button.image = eyedropper_icon  # Keep a reference to avoid garbage collection
+        eyedropper_button.pack(anchor='nw', pady=10, padx=10)
+
+        # Create a square canvas below the eyedropper button
+        color_square = Canvas(button_frame, width=180, height=180, bg='white', bd=2, highlightbackground='black')
+        color_square.pack(anchor='nw', pady=10, padx=10)
+        # Create a label in the middle of the canvas
+        label = tk.Label(color_square, text="No colour selected.", bg='white', fg='grey')
+        color_square.create_window(90, 90, window=label, anchor='center')
+
+
+        # Create a frame for the image
+        img_frame = Frame(img_window)
+        img_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=1)
+
         img_label = tk.Label(img_window)
         img_label.pack(pady=10, padx=10)
-        img = tk.PhotoImage(file=file_path)
-        img_label.config(image=img)
-        img_label.image = img
+        # Open and (potentially) scale the image using PIL
+        img = Image.open(file_path)
+        # img = img.resize((200, 200), Image.LANCZOS)  # Resize image to desired size
+        # Convert the image to a format Tkinter can use
+        tk_img = ImageTk.PhotoImage(img)
+
+        img_label.config(image=tk_img)
+        img_label.image = tk_img
 
         # Add to open windows dictionary
         open_windows[file_path] = img_window
