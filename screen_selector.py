@@ -43,31 +43,24 @@ def make_selection(root):
         y = int(min(start_y, curY))
         width = int(abs(start_x - curX))
         height = int(abs(start_y - curY))
-        screenshot = pyautogui.screenshot(region=(x, y, width, height)) # pyautogui handles all layering for us to capture anything in top to bottom order
+        selection = pyautogui.screenshot(region=(x, y, width, height)) # pyautogui handles all layering for us to capture anything in top to bottom order
                                                                         # to compile the final selection image
 
         # Using datetime library to give saved selections timestamped names to ensure filename uniqueness
         current_datetime = datetime.datetime.now()
         timestamp = current_datetime.strftime("%Y-%m-%d_%H-%M-%S") # YY-MM-DD_HH-MM-SS format
 
-        screenshot.save(f"screen_selections/selection_{timestamp}.png") # fstring to use a variable within the filename
+        selection.save(f"screen_selections/selection_{timestamp}.png") # fstring to use a variable within the filename
         root.deiconify()
         messagebox.showinfo("Colour Tool", f"Selection saved as screenshot_{timestamp}.png.")
+    
+    def on_right_click(event):
+        top.destroy()
+        root.deiconify()
 
     # Bind mouse events to canvas
     canvas.bind("<ButtonPress-1>", on_mouse_down)
     canvas.bind("<B1-Motion>", on_mouse_drag)
     canvas.bind("<ButtonRelease-1>", on_mouse_up)
-
-# MOVED TO MAIN.PY :
-
-# # Create the main Tkinter window
-# root = tk.Tk()
-# root.title("Snipping Tool")
-
-# # Add the screenshot button
-# screenshot_button = tk.Button(root, text="Make Selection", command=make_selection) # changed to lambda function to provide root attribute to this file from main.py
-# screenshot_button.pack(pady=20, padx=20)
-
-# # Start the Tkinter event loop
-# root.mainloop()
+    # Bind right click to terminate the selection process
+    canvas.bind("<ButtonRelease-3>", on_right_click)
