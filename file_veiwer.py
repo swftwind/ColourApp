@@ -42,9 +42,20 @@ def open_selections(root):
         eyedropper_icon = eyedropper_icon.resize((40, 40), Image.LANCZOS)
         eyedropper_icon = ImageTk.PhotoImage(eyedropper_icon)
 
+        def on_eyedropper_selection(img_window):
+            if toggle_var.get():
+                print("zamn")
+                img_window.config(cursor="cross")
+            else:
+                print("zawg")
+                img_window.config(cursor="")
+
+        def on_eyedropper_use():
+            pass
+
         # Create the eyedropper button
         toggle_var = tk.IntVar()
-        eyedropper_button = ttk.Checkbutton(button_frame, image=eyedropper_icon, variable=toggle_var, style="Toolbutton", command=lambda: print("zamn"))
+        eyedropper_button = ttk.Checkbutton(button_frame, image=eyedropper_icon, variable=toggle_var, style="Toolbutton", command=lambda: on_eyedropper_selection(img_window))
         eyedropper_button.image = eyedropper_icon  # Keep a reference to avoid garbage collection
         eyedropper_button.pack(anchor='nw', pady=10, padx=10)
 
