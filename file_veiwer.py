@@ -7,7 +7,7 @@ from PIL import Image, ImageTk
 # default_folder_path = os.path.expanduser("/screen_selections")
 open_windows = {}  # Dictionary to track open windows
 
-def open_selections(root):
+def open_selections(root, icon_path):
 
     # Check if the selection window is already open (to ensure every file and/or window is only open once).
     if 'selection_window' in open_windows:
@@ -27,8 +27,13 @@ def open_selections(root):
         img_window = Toplevel(root)
         img_window.title(file_path)
 
+        # Load and set the custom icon
+        icon_image = Image.open(icon_path)
+        icon_photo = ImageTk.PhotoImage(icon_image)
+        img_window.iconphoto(True, icon_photo)
+
         # Create a frame for the side menu
-        menu_frame = Frame(img_window, width=200, bg='lightgrey')
+        menu_frame = Frame(img_window, width=200, height=400, bg='lightgrey')
         menu_frame.pack(side=tk.LEFT, fill=tk.Y)
         menu_frame.pack_propagate(False)
 
@@ -66,6 +71,15 @@ def open_selections(root):
         label = tk.Label(color_square, text="No colour selected.", bg='white', fg='grey')
         color_square.create_window(90, 90, window=label, anchor='center')
 
+        # Load and add the small PNG image to the bottom left of the left UI frame
+        logo_path = "ui_elements/branding/Vibrant_Logo_Final_TransparentBG.png"  # Replace with the correct path to your small PNG image
+        logo = Image.open(logo_path)
+        logo = logo.resize((100, 40), Image.LANCZOS)  # Resize as needed
+        logo = ImageTk.PhotoImage(logo)
+        logo_label = tk.Label(menu_frame, image=logo, bg='lightgrey')
+        logo_label.image = logo  # Keep a reference to avoid garbage collection
+        logo_label.pack(side=tk.BOTTOM, anchor='sw', pady=10, padx=10)
+
 
         # Create a frame for the image
         img_frame = Frame(img_window)
@@ -94,6 +108,11 @@ def open_selections(root):
     selection_window = Toplevel(root)
     selection_window.title("Saved Selections")
     selection_window.geometry("600x400")  # Set the default size of the window
+
+    # Load and set the custom icon immediately
+    icon_image = Image.open(icon_path)
+    icon_photo = ImageTk.PhotoImage(icon_image)
+    selection_window.iconphoto(True, icon_photo)
 
     frame = Frame(selection_window)
     frame.pack(fill=tk.BOTH, expand=1)

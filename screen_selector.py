@@ -2,23 +2,43 @@ import tkinter as tk
 from tkinter import messagebox, Toplevel, Canvas
 import pyautogui
 import datetime
-# from PIL import Image
+from PIL import Image, ImageTk
 
 # Function to capture the screenshot of the selected region
-def make_selection(root):
+def make_selection(root, icon_path):
     # Minimize the root window
     root.withdraw()
     
     # Create a full-screen transparent window
     top = Toplevel(root) # 'top' is an overlay window created on top 'level' of the existing root window
     top.attributes('-fullscreen', True)
-    top.attributes('-alpha', 0.2)
+    top.attributes('-alpha', 0.3)
     top.config(bg='black')
+
+    # Load and set the custom icon
+    icon_image = Image.open(icon_path)
+    icon_photo = ImageTk.PhotoImage(icon_image)
+    top.iconphoto(True, icon_photo)
     
     # Create a canvas to draw the selection rectangle
     canvas = Canvas(top, cursor="cross", bg='grey', highlightthickness=0) # creates a rectangle in the layer named 'top' that shows
                                                                           # possible selection areas
     canvas.pack(fill=tk.BOTH, expand=tk.YES)
+
+
+    # Load the logo image
+    logo_path = "ui_elements/branding/Vibrant_Logo_Final_TransparentBG.png"  # Replace with the correct path to your logo image
+    logo_image = Image.open(logo_path)
+    logo_image = logo_image.resize((200, 80), Image.LANCZOS)  # Resize as needed
+    logo_photo = ImageTk.PhotoImage(logo_image)
+
+    # Function to update the logo position after the canvas is drawn
+    def update_logo_position(event=None):
+        canvas.create_image(canvas.winfo_width() // 2, canvas.winfo_height() // 2, image=logo_photo, anchor='center')
+
+    # Bind the update_logo_position function to the canvas resize event
+    canvas.bind("<Configure>", update_logo_position)
+
     
     # Variables to store the coordinates of the selected region
     start_x = start_y = curX = curY = 0
