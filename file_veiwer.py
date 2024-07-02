@@ -29,7 +29,7 @@ def open_selections(root, icon_path):
 
         # Load and set the custom icon
         icon_image = Image.open(icon_path)
-        icon_photo = ImageTk.PhotoImage(icon_image)
+        icon_photo = ImageTk.PhotoImage(icon_image) # convert image to a ImageTk photo for display optimization
         img_window.iconphoto(True, icon_photo)
 
         # Create a frame for the side menu
@@ -42,7 +42,7 @@ def open_selections(root, icon_path):
         button_frame.pack(fill=tk.BOTH, expand=True)
 
         # Load the eyedropper icon
-        eyedropper_icon_path = "ui_elements/eyedropper.png"  # Replace with the correct path to the eyedropper icon
+        eyedropper_icon_path = "ui_elements/eyedropper.png"
         eyedropper_icon = Image.open(eyedropper_icon_path)
         eyedropper_icon = eyedropper_icon.resize((40, 40), Image.LANCZOS)
         eyedropper_icon = ImageTk.PhotoImage(eyedropper_icon)
@@ -51,12 +51,43 @@ def open_selections(root, icon_path):
             if toggle_var.get():
                 print("zamn")
                 img_window.config(cursor="cross")
+                img_label.bind("<Motion>", update_colour_square)  # Bind mouse motion to update colour
+                img_label.bind("<Leave>", on_mouse_leave)  # Bind mouse leave to handle out of bounds
             else:
                 print("zawg")
                 img_window.config(cursor="")
+                img_label.unbind("<Motion>")  # Unbind mouse motion
+                img_label.unbind("<Leave>")  # Unbind mouse leave
 
         def on_eyedropper_use():
             pass
+
+
+        def get_pixel_colour(x, y):
+            img = Image.open(file_path)
+            img = img.convert('RGB')
+
+            if ((x < 0) or (y < 0) or (x >= img.width) or (y >= img.height)):  # Check if coordinates are within bounds
+                return None
+
+            pixel_colour = img.getpixel((x, y))
+            return f'#{pixel_colour[0]:02x}{pixel_colour[1]:02x}{pixel_colour[2]:02x}'
+        
+        def update_colour_square(event):
+            x = event.x
+            y = event.y
+            colour = get_pixel_colour(x, y)
+
+            if colour: # if colour has been set to None this will return false.
+                colour_square.config(bg=colour)
+                label.config(text="", bg=colour)
+            # else:
+            #     label.config(text="No colour selected.", bg='white')
+
+        def on_mouse_leave(event):
+            label.config(text="No colour selected.", bg='white')
+            colour_square.config(bg='white')
+
 
         # Create the eyedropper button
         toggle_var = tk.IntVar()
@@ -65,14 +96,14 @@ def open_selections(root, icon_path):
         eyedropper_button.pack(anchor='nw', pady=10, padx=10)
 
         # Create a square canvas below the eyedropper button
-        color_square = Canvas(button_frame, width=180, height=180, bg='white', bd=2, highlightbackground='black')
-        color_square.pack(anchor='nw', pady=10, padx=10)
+        colour_square = Canvas(button_frame, width=180, height=180, bg='white', bd=2, highlightbackground='black')
+        colour_square.pack(anchor='nw', pady=10, padx=10)
         # Create a label in the middle of the canvas
-        label = tk.Label(color_square, text="No colour selected.", bg='white', fg='grey')
-        color_square.create_window(90, 90, window=label, anchor='center')
+        label = tk.Label(colour_square, text="No colour selected.", bg='white', fg='grey')
+        colour_square.create_window(90, 90, window=label, anchor='center')
 
         # Load and add the small PNG image to the bottom left of the left UI frame
-        logo_path = "ui_elements/branding/Vibrant_Logo_Final_TransparentBG.png"  # Replace with the correct path to your small PNG image
+        logo_path = "ui_elements/branding/Vibrant_Logo_Final_TransparentBG.png"
         logo = Image.open(logo_path)
         logo = logo.resize((100, 40), Image.LANCZOS)  # Resize as needed
         logo = ImageTk.PhotoImage(logo)
@@ -109,7 +140,7 @@ def open_selections(root, icon_path):
     selection_window.title("Saved Selections")
     selection_window.geometry("600x400")  # Set the default size of the window
 
-    # Load and set the custom icon immediately
+    # Load and set the custom icon upon creation of the UI window
     icon_image = Image.open(icon_path)
     icon_photo = ImageTk.PhotoImage(icon_image)
     selection_window.iconphoto(True, icon_photo)

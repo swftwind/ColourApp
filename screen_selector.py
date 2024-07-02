@@ -27,9 +27,9 @@ def make_selection(root, icon_path):
 
 
     # Load the logo image
-    logo_path = "ui_elements/branding/Vibrant_Logo_Final_TransparentBG.png"  # Replace with the correct path to your logo image
+    logo_path = "ui_elements/branding/Vibrant_Logo_Final_TransparentBG.png"
     logo_image = Image.open(logo_path)
-    logo_image = logo_image.resize((200, 80), Image.LANCZOS)  # Resize as needed
+    logo_image = logo_image.resize((400, 160), Image.LANCZOS)  # Resize as needed
     logo_photo = ImageTk.PhotoImage(logo_image)
 
     # Function to update the logo position after the canvas is drawn
