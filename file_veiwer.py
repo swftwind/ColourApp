@@ -136,6 +136,13 @@ def open_selections(root, icon_path):
 
         img_window.protocol("WM_DELETE_WINDOW", on_close_image_window)
 
+    def open_working_directory():
+        working_directory = os.getcwd() + '/screen_selections'  # Get current working directory
+        if os.name == 'nt':  # Windows
+            os.startfile(working_directory)
+        elif os.name == 'posix':  # macOS or Linux
+            subprocess.call(['open', working_directory])
+
     selection_window = Toplevel(root)
     selection_window.title("Saved Selections")
     selection_window.geometry("600x400")  # Set the default size of the window
@@ -174,3 +181,26 @@ def open_selections(root, icon_path):
         selection_window.destroy()
 
     selection_window.protocol("WM_DELETE_WINDOW", on_close_selection_window)
+
+    # Create a frame for the bottom widgets
+    bottom_frame = Frame(selection_window)
+    bottom_frame.pack(side=tk.BOTTOM, fill=tk.X)
+
+    # Add a button to open the working directory
+    folder_icon_path = "ui_elements/folder.png"
+    folder_icon = Image.open(folder_icon_path)
+    folder_icon = folder_icon.resize((30, 30), Image.LANCZOS)
+    folder_icon = ImageTk.PhotoImage(folder_icon)
+
+    open_dir_button = tk.Button(bottom_frame, image=folder_icon, command=open_working_directory)
+    open_dir_button.image = folder_icon  # Keep a reference to avoid garbage collection
+    open_dir_button.pack(side='right', pady=5, padx=5)
+
+    # Load and add the small PNG image to the bottom left of the left UI frame
+    logo_path = "ui_elements/branding/Vibrant_Logo_Final_TransparentBG.png"
+    logo = Image.open(logo_path)
+    logo = logo.resize((100, 40), Image.LANCZOS)  # Resize as needed
+    logo = ImageTk.PhotoImage(logo)
+    logo_label = tk.Label(bottom_frame, image=logo)
+    logo_label.image = logo  # Keep a reference to avoid garbage collection
+    logo_label.pack(side='left', pady=2, padx=2)
