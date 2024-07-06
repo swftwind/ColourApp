@@ -37,9 +37,12 @@ def open_selections(root, icon_path):
         menu_frame.pack(side=tk.LEFT, fill=tk.Y)
         menu_frame.pack_propagate(False)
 
-        # Create a nested frame for the button
-        button_frame = Frame(menu_frame, bg='lightgrey')
-        button_frame.pack(fill=tk.BOTH, expand=True)
+        # Create a nested frame for the buttons
+        ui_frame = Frame(menu_frame, bg='lightgrey')
+        ui_frame.pack(fill=tk.BOTH, expand=True)
+        # Create a frame for the tool buttons
+        tool_button_frame = Frame(ui_frame, bg='lightgrey')
+        tool_button_frame.pack(anchor='nw', pady=0, padx=0)
 
         # Load the eyedropper icon
         eyedropper_icon_path = "ui_elements/eyedropper.png"
@@ -47,8 +50,14 @@ def open_selections(root, icon_path):
         eyedropper_icon = eyedropper_icon.resize((40, 40), Image.LANCZOS)
         eyedropper_icon = ImageTk.PhotoImage(eyedropper_icon)
 
+        # Load the eyedropper icon
+        zoom_icon_path = "ui_elements/loupe-neutral.png"
+        zoom_icon = Image.open(zoom_icon_path)
+        zoom_icon = zoom_icon.resize((40, 40), Image.LANCZOS)
+        zoom_icon = ImageTk.PhotoImage(zoom_icon)
+
         def on_eyedropper_selection(img_window):
-            if toggle_var.get():
+            if eyedropper_toggle_var.get():
                 print("zamn")
                 img_window.config(cursor="cross")
                 img_label.bind("<Motion>", update_colour_square)  # Bind mouse motion to update colour
@@ -57,6 +66,18 @@ def open_selections(root, icon_path):
                 print("zawg")
                 img_window.config(cursor="")
                 img_label.unbind("<Motion>")  # Unbind mouse motion
+                img_label.unbind("<Leave>")  # Unbind mouse leave
+
+        def on_zoom_selection(img_window):
+            if zoom_toggle_var.get():
+                print("2zamn")
+                img_window.config(cursor="sizing")
+                # img_label.bind("<Motion>", update_colour_square)  # Bind mouse motion to update colour
+                img_label.bind("<Leave>", on_mouse_leave)  # Bind mouse leave to handle out of bounds
+            else:
+                print("2zawg")
+                img_window.config(cursor="")
+                # img_label.unbind("<Motion>")  # Unbind mouse motion
                 img_label.unbind("<Leave>")  # Unbind mouse leave
 
         def on_eyedropper_use():
@@ -89,15 +110,21 @@ def open_selections(root, icon_path):
             colour_square.config(bg='white')
 
 
-        # Create the eyedropper button
-        toggle_var = tk.IntVar()
-        eyedropper_button = ttk.Checkbutton(button_frame, image=eyedropper_icon, variable=toggle_var, style="Toolbutton", command=lambda: on_eyedropper_selection(img_window))
+        # Create the eyedropper tool button
+        eyedropper_toggle_var = tk.IntVar()
+        eyedropper_button = ttk.Checkbutton(tool_button_frame, image=eyedropper_icon, variable=eyedropper_toggle_var, style="Toolbutton", command=lambda: on_eyedropper_selection(img_window))
         eyedropper_button.image = eyedropper_icon  # Keep a reference to avoid garbage collection
-        eyedropper_button.pack(anchor='nw', pady=10, padx=10)
+        eyedropper_button.pack(side='left', pady=10, padx=10)
+
+        # Create the zoom tool button
+        zoom_toggle_var = tk.IntVar()
+        zoom_button = ttk.Checkbutton(tool_button_frame, image=zoom_icon, variable=zoom_toggle_var, style="Toolbutton", command=lambda: on_zoom_selection(img_window))
+        zoom_button.image = zoom_icon  # Keep a reference to avoid garbage collection
+        zoom_button.pack(side='right', pady=10, padx=0)
 
         # Create a square canvas below the eyedropper button
-        colour_square = Canvas(button_frame, width=180, height=180, bg='white', bd=2, highlightbackground='black')
-        colour_square.pack(anchor='nw', pady=10, padx=10)
+        colour_square = Canvas(ui_frame, width=180, height=180, bg='white', bd=2, highlightbackground='black')
+        colour_square.pack(anchor='nw', pady=0, padx=10)
         # Create a label in the middle of the canvas
         label = tk.Label(colour_square, text="No colour selected.", bg='white', fg='grey')
         colour_square.create_window(90, 90, window=label, anchor='center')
