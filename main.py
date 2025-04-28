@@ -3,7 +3,7 @@
 # test
 # test 2
 
-print("zamn zawg")
+print("woof")
 
 
 import tkinter as tk
