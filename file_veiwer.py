@@ -74,11 +74,15 @@ def open_selections(root, icon_path):
                 img_window.config(cursor="sizing")
                 # img_label.bind("<Motion>", update_colour_square)  # Bind mouse motion to update colour
                 img_label.bind("<Leave>", on_mouse_leave)  # Bind mouse leave to handle out of bounds
+                img_label.bind("<Button-1>", zoom_in)  # Bind left click to zoom-in function
+                img_label.bind("<Button-3>", zoom_out)  # Bind right click to zoom-out function
             else:
                 print("2zawg")
                 img_window.config(cursor="")
                 # img_label.unbind("<Motion>")  # Unbind mouse motion
                 img_label.unbind("<Leave>")  # Unbind mouse leave
+                img_label.unbind("<Button-1>")  # Unbind left click
+                img_label.unbind("<Button-3>")  # Unbind right click
 
         def on_eyedropper_use():
             pass
@@ -108,6 +112,26 @@ def open_selections(root, icon_path):
         def on_mouse_leave(event):
             label.config(text="No colour selected.", bg='white')
             colour_square.config(bg='white')
+
+        
+        def zoom_in(event):
+            nonlocal current_zoom_level
+            current_zoom_level += 0.1
+            update_zoom()
+
+        def zoom_out(event):
+            nonlocal current_zoom_level
+            current_zoom_level -= 0.1
+            update_zoom()
+
+        def update_zoom():
+            new_width = int(original_img.width * current_zoom_level)
+            new_height = int(original_img.height * current_zoom_level)
+            img_resized = original_img.resize((new_width, new_height), Image.LANCZOS)
+            tk_img_resized = ImageTk.PhotoImage(img_resized)
+            img_label.config(image=tk_img_resized)
+            img_label.image = tk_img_resized
+            return tk_img_resized
 
 
         # Create the eyedropper tool button
@@ -147,9 +171,15 @@ def open_selections(root, icon_path):
         img_label.pack(pady=10, padx=10)
         # Open and (potentially) scale the image using PIL
         img = Image.open(file_path)
+        # Store original image to avoid multiple resizes affecting quality
+        original_img = img.copy()
+        tk_img = ImageTk.PhotoImage(img)
         # img = img.resize((200, 200), Image.LANCZOS)  # Resize image to desired size
         # Convert the image to a format Tkinter can use
         tk_img = ImageTk.PhotoImage(img)
+
+        # Initialize current zoom level
+        current_zoom_level = 1.0
 
         img_label.config(image=tk_img)
         img_label.image = tk_img
